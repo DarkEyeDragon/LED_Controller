@@ -20,6 +20,7 @@
                                 <ColumnDefinition Width="50*"/>
                                 <ColumnDefinition Width="64*"/>
                                 <ColumnDefinition Width="134*"/>
+                                <ColumnDefinition Width="64*"/>
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </ItemsPanelTemplate>
@@ -52,13 +53,23 @@
                 <StatusBarItem Grid.Column="3">
                     <TextBlock Name="Status">Status: No errors</TextBlock>
                 </StatusBarItem>
+                <StatusBarItem Grid.Column="4">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label>Buffer: </Label>
+                        <ProgressBar Grid.Column="1" Name="DataStatus" Value="0" IsEnabled="False" Height="16" Width="120"></ProgressBar>
+                    </Grid>
+                </StatusBarItem>
             </StatusBar>
             <Image Name="ImagePreview" HorizontalAlignment="Left" Height="270" Margin="10,10,0,0" VerticalAlignment="Top" Width="480"/>
-            <StackPanel Width="93">
-                <Button Name="RealTimeButton" Content="Start Realtime" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
-                <Button Name="RelaxingButton" Content="Start Relaxing" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
-                <Button Name="ButtonDebug" Content="Debug" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="ButtonDebug_OnClick"/>
-                <ComboBox Name="ComboBoxCom" SelectionChanged="ComboBox_SelectionChanged"/>
+            <StackPanel Width="175">
+                <Button Margin="0 20 0 10" Name="RealTimeButton" Content="Start Realtime" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
+                <Button Margin="0 10" Name="RelaxingButton" Content="Start Relaxing" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
+                <Button Margin="0 10" Name="ButtonDebug" Content="Debug" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="ButtonDebug_OnClick"/>
+                <ComboBox Margin="0 10" Name="ComboBoxCom" SelectionChanged="ComboBox_SelectionChanged"/>
             </StackPanel>
         </DockPanel>
     </Grid>
