@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LED_Controller.Debug"
         mc:Ignorable="d"
-        Title="ConsoleWindow" Height="450" Width="800">
+        Title="ConsoleWindow" Height="450" Width="800"
+        Closed="ConsoleWindow_OnClosed">
     <Grid>
         <ScrollViewer Name="ScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <TextBlock Name="Output"></TextBlock>

@@ -30,8 +30,8 @@ namespace LED_Controller
         private SerialPort _serialPort;
 
         private Graphics gfx;
-        private readonly DispatcherTimer timer = new DispatcherTimer();
 
+        private readonly DispatcherTimer timer = new DispatcherTimer();
 
         //Console window
         private ConsoleWindow console;
@@ -48,6 +48,7 @@ namespace LED_Controller
             {
                 ComboBoxCom.Items.Add(port);
             }
+
             timer.Tick += dispacherTimer_Tick;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 60);
             bmp_Screenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
@@ -72,7 +73,7 @@ namespace LED_Controller
         {
             CaptureScreen();
             Color color = Color.FromArgb(_mostFrequent);
-            byte[] colorBytes = { color.R, color.G, color.B };
+            byte[] colorBytes = {color.R, color.G, color.B};
             SendSerialData(colorBytes);
         }
 
@@ -186,7 +187,8 @@ namespace LED_Controller
         {
             if (ComboBoxCom.SelectedItem.ToString().StartsWith("--"))
             {
-                if (_serialPort != null && _serialPort.IsOpen) {
+                if (_serialPort != null && _serialPort.IsOpen)
+                {
                     _serialPort.Close();
                     _serialPort.Dispose();
                     Status.Text = "Status: Disposed connection.";
@@ -198,9 +200,9 @@ namespace LED_Controller
                 {
                     _serialPort = new SerialPort(ComboBoxCom.SelectedItem.ToString());
                     _serialPort.BaudRate = 9600;
+                    _serialPort.ReadTimeout = 50;
                     _serialPort.Open();
                     Status.Text = "Status: Connected successfully";
-                    ComStatus.Text = $"Connected to {ComboBoxCom.SelectedItem}";
                 }
                 catch (Exception exception)
                 {
@@ -208,7 +210,6 @@ namespace LED_Controller
                     Console.WriteLine(exception);
                 }
             }
-            
         }
 
         private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)
@@ -218,7 +219,6 @@ namespace LED_Controller
                 console = new ConsoleWindow(ref _serialPort);
                 console.Show();
             }
-            
         }
     }
 }

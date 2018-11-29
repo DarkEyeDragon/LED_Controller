@@ -1,14 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace LED_Controller.Debug
 {
     public partial class ConsoleWindow : Window
     {
+
+
         private SerialPort _serialPort;
-        Task task;
+
+        //TODO Change to Concurrent list (https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentqueue-1?view=netframework-4.7.2)
+        private List<string> bufferStrings = new List<string>();
+
         public ConsoleWindow(ref SerialPort serialPort)
         {
             InitializeComponent();
@@ -19,10 +27,29 @@ namespace LED_Controller.Debug
             }
         }
 
+        private void PopQueue(object sender, EventArgs e)
+        {
+            lock (bufferStrings)
+            {
+                foreach (var queueString in bufferStrings)
+                {
+                    AppendText(queueString);
+                }
+                bufferStrings.Clear();
+            }
+        }
+
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (_serialPort != null)
-                AppendText(((SerialPort) sender).ReadLine());
+            lock (bufferStrings)
+            {
+                if (_serialPort != null)
+                {
+                    bufferStrings.Add(((SerialPort)sender).ReadLine());
+                    //AppendText(((SerialPort) sender).ReadLine());
+                }
+            }
+            
         }
 
         public void AppendText(string text)
@@ -37,6 +64,11 @@ namespace LED_Controller.Debug
                 Output.Inlines.Add(text);
                 ScrollViewer.ScrollToBottom();
             });
+        }
+
+        private void ConsoleWindow_OnClosed(object sender, EventArgs e)
+        {
+            _serialPort = null;
         }
     }
 }
