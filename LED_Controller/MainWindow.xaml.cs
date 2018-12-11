@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using LED_Controller.Debug;
+using LED_Controller.Serial;
 using Color = System.Drawing.Color;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
@@ -18,7 +19,7 @@ namespace LED_Controller
 {
     public partial class MainWindow : Window
     {
-        private readonly Graphics gfxScreenshot;
+        private readonly Graphics _gfxScreenshot;
         private readonly int SCREEN_HEIGHT = Screen.PrimaryScreen.Bounds.Height;
         private readonly int SCREEN_WIDTH = Screen.PrimaryScreen.Bounds.Width;
         private readonly BackgroundWorker worker = new BackgroundWorker();
@@ -27,7 +28,7 @@ namespace LED_Controller
         private SolidBrush brush;
         private readonly int[] _colorInts = new int[220];
 
-        private SerialPort _serialPort;
+        private SerialCon _serialPort;
 
         private Graphics gfx;
 
@@ -54,7 +55,7 @@ namespace LED_Controller
             bmp_Screenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
                 Screen.PrimaryScreen.Bounds.Height,
                 PixelFormat.Format32bppArgb);
-            gfxScreenshot = Graphics.FromImage(bmp_Screenshot);
+            _gfxScreenshot = Graphics.FromImage(bmp_Screenshot);
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_completed;
         }
@@ -86,7 +87,7 @@ namespace LED_Controller
         public void CaptureScreen()
         {
             // Take the screenshot from the upper left corner to the right bottom corner.
-            gfxScreenshot.CopyFromScreen(Screen.PrimaryScreen.Bounds.X, Screen.PrimaryScreen.Bounds.Y, 0, 0,
+            _gfxScreenshot.CopyFromScreen(Screen.PrimaryScreen.Bounds.X, Screen.PrimaryScreen.Bounds.Y, 0, 0,
                 Screen.PrimaryScreen.Bounds.Size, CopyPixelOperation.SourceCopy);
 
 
@@ -113,11 +114,13 @@ namespace LED_Controller
             if (timer.IsEnabled)
             {
                 timer.Stop();
+                ComboBoxCom.IsEnabled = true;
                 RealTimeButton.Content = "Start Realtime";
             }
             else
             {
                 timer.Start();
+                ComboBoxCom.IsEnabled = false;
                 RealTimeButton.Content = "Stop Realtime";
             }
         }
@@ -134,7 +137,6 @@ namespace LED_Controller
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
-
                 return bitmapImage;
             }
         }
@@ -179,7 +181,7 @@ namespace LED_Controller
         {
             if (_serialPort != null && _serialPort.IsOpen)
             {
-                _serialPort?.Write(dataBytes, 0, dataBytes.Length);
+                _serialPort?.Write(dataBytes);
             }
         }
 
@@ -191,24 +193,41 @@ namespace LED_Controller
                 {
                     _serialPort.Close();
                     _serialPort.Dispose();
-                    Status.Text = "Status: Disposed connection.";
                 }
+
+                Status.Text = "Status: Disposed connection.";
             }
             else
             {
-                try
+                _serialPort = new SerialCon(ComboBoxCom.SelectedItem.ToString());
+                _serialPort.Open();
+                _serialPort.DataReceived += DataReceived;
+                Status.Text = $"Status: Connected to {ComboBoxCom.SelectedItem}";
+            }
+        }
+        private byte b;
+        private void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (console != null && console.IsInitialized)
+            {
+                var s = (SerialPort) sender;
+                if (_serialPort == null) return;
+                lock (console.BufferList)
                 {
-                    _serialPort = new SerialPort(ComboBoxCom.SelectedItem.ToString());
-                    _serialPort.BaudRate = 9600;
-                    _serialPort.ReadTimeout = 50;
-                    _serialPort.Open();
-                    Status.Text = "Status: Connected successfully";
+                    switch (console.Mode)
+                    {
+                        case ConsoleWindow.ConsoleModes.ReadByte:
+                            b = (byte)s.ReadByte();
+                            console.BufferList.Add(b.ToString());
+                            break;
+                        case ConsoleWindow.ConsoleModes.NewLine:
+                            console.BufferList.Add(s.ReadLine());
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
-                catch (Exception exception)
-                {
-                    Status.Text = "Status: " + exception.Message;
-                    Console.WriteLine(exception);
-                }
+
             }
         }
 
@@ -216,7 +235,7 @@ namespace LED_Controller
         {
             if (console == null || !console.IsVisible)
             {
-                console = new ConsoleWindow(ref _serialPort);
+                console = new ConsoleWindow();
                 console.Show();
             }
         }

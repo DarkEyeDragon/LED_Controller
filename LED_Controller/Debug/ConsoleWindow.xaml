@@ -8,7 +8,19 @@
         Title="ConsoleWindow" Height="450" Width="800"
         Closed="ConsoleWindow_OnClosed">
     <Grid>
-        <ScrollViewer Name="ScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" ></ColumnDefinition>
+                <ColumnDefinition Width="200" ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ComboBox Name="ComboBoxMode" Grid.Column="1" SelectionChanged="ComboBoxMode_OnSelectionChanged">
+            </ComboBox>
+        </Grid>
+        <ScrollViewer Grid.Row="1" Name="ScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <TextBlock Name="Output"></TextBlock>
         </ScrollViewer>
     </Grid>
