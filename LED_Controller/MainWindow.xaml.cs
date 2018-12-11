@@ -239,5 +239,10 @@ namespace LED_Controller
                 console.Show();
             }
         }
+
+        private void BordersButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

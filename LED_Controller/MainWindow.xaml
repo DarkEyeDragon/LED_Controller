@@ -61,8 +61,8 @@
             </StatusBar>
             <Image Name="ImagePreview" HorizontalAlignment="Left" Height="270" Margin="10,10,0,0" VerticalAlignment="Top" Width="480"/>
             <StackPanel Width="175">
-                <Button Margin="0 20 0 10" Name="RealTimeButton" Content="Start Realtime" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
-                <Button Margin="0 10" Name="RelaxingButton" Content="Start Relaxing" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
+                <Button Margin="0 20 0 10" Name="RealTimeButton" Content="Most Frequent" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
+                <Button Margin="0 10" Name="BordersButton" Content="Borders" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="BordersButton_Click"/>
                 <Button Margin="0 10" Name="ButtonDebug" Content="Debug" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="ButtonDebug_OnClick"/>
                 <ComboBox Margin="0 10" Name="ComboBoxCom" SelectionChanged="ComboBox_SelectionChanged"/>
             </StackPanel>
