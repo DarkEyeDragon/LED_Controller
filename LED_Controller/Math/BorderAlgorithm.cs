@@ -28,28 +28,35 @@ namespace LED_Controller.Math
             BorderWidth = borderWidth;
         }
 
-        public void CalculateBorderColorss()
+        public void CalculateBorderColors()
         {
-            int[] pixelColorsTop = new int[ColorPixels];
-            int[] pixelColorsBottom = new int[ColorPixels];
-            int[] pixelColorsLeft = new int[ColorPixels];
-            int[] pixelColorsRight = new int[ColorPixels];
+            int arraySize = ColorPixels * BorderWidth;
+            int[] pixelColorsTop = new int[arraySize];
+            int[] pixelColorsBottom = new int[arraySize];
+            int[] pixelColorsLeft = new int[arraySize];
+            int[] pixelColorsRight = new int[arraySize];
 
             for (int x = 0; x < ColorPixels; x++)
             {
+
+                for (int y = 0; y < BorderWidth; y++)
+                {
+
+                }
                 pixelColorsTop[x] = Bitmap.GetPixel(x, 0).ToArgb();
                 pixelColorsBottom[x] = Bitmap.GetPixel(x, Bitmap.Height).ToArgb();
             }
-            for (int y = 0; y < ColorPixels; y+=OffsetH)
+            for (int y = 1; y < ColorPixels; y+=OffsetH)
             {
 
                 //TODO take average of borders
                 for (int x = 0; x < BorderWidth; x++)
                 {
-                    pixelColorsLeft[y] = Bitmap.GetPixel(0, y).ToArgb();
-                    pixelColorsBottom[y] = Bitmap.GetPixel(Bitmap.Height, Bitmap.Height).ToArgb();
+                    pixelColorsLeft[y+x] = Bitmap.GetPixel(x, y).ToArgb();
+                    pixelColorsBottom[y+x] = Bitmap.GetPixel(x, Bitmap.Height-y).ToArgb();
+                    Console.WriteLine(pixelColorsBottom);
                 }
-                
+
             }
             
         }

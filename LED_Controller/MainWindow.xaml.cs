@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using LED_Controller.Debug;
+using LED_Controller.Math;
 using LED_Controller.Serial;
 using Color = System.Drawing.Color;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
@@ -19,6 +20,9 @@ namespace LED_Controller
 {
     public partial class MainWindow : Window
     {
+
+        private BorderAlgorithm borderAlgo;
+
         private readonly Graphics _gfxScreenshot;
         private readonly int SCREEN_HEIGHT = Screen.PrimaryScreen.Bounds.Height;
         private readonly int SCREEN_WIDTH = Screen.PrimaryScreen.Bounds.Width;
@@ -58,6 +62,8 @@ namespace LED_Controller
             _gfxScreenshot = Graphics.FromImage(bmp_Screenshot);
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_completed;
+
+            borderAlgo = new BorderAlgorithm(100, 5, bmp_Screenshot);
         }
 
         //Triggers whenever the background worker completes their task.
@@ -75,7 +81,10 @@ namespace LED_Controller
             CaptureScreen();
             Color color = Color.FromArgb(_mostFrequent);
             byte[] colorBytes = {color.R, color.G, color.B};
+            borderAlgo.Bitmap = bmp_Screenshot;
+            borderAlgo.CalculateBorderColors();
             SendSerialData(colorBytes);
+
         }
 
         //Trigger the worker every timer tick.
@@ -124,7 +133,10 @@ namespace LED_Controller
                 RealTimeButton.Content = "Stop Realtime";
             }
         }
+        private void BordersButton_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
         //Convert Image/Bitmap to ImageSource
         public ImageSource ConvertFromImage(Image image)
         {
@@ -238,11 +250,6 @@ namespace LED_Controller
                 console = new ConsoleWindow();
                 console.Show();
             }
-        }
-
-        private void BordersButton_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
