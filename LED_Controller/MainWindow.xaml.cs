@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -20,16 +21,25 @@ namespace LED_Controller
 {
     public partial class MainWindow : Window
     {
+        public enum Modes
+        {
+            MostFrequent,
+            Borders,
+            None
+        }
 
-        private BorderAlgorithm borderAlgo;
+        public Modes LedMode { get; set; }
+
+
+        private Algorithm borderAlgo;
 
         private readonly Graphics _gfxScreenshot;
-        private readonly int SCREEN_HEIGHT = Screen.PrimaryScreen.Bounds.Height;
-        private readonly int SCREEN_WIDTH = Screen.PrimaryScreen.Bounds.Width;
-        private readonly BackgroundWorker worker = new BackgroundWorker();
-        private Bitmap bmp_mostFrequent = new Bitmap(30, 30);
-        private readonly Bitmap bmp_Screenshot;
-        private SolidBrush brush;
+        private readonly int _screenHeight = Screen.PrimaryScreen.Bounds.Height;
+        private readonly int _screenWidth = Screen.PrimaryScreen.Bounds.Width;
+        private readonly BackgroundWorker _worker = new BackgroundWorker();
+        private Bitmap _bmpMostFrequent = new Bitmap(30, 30);
+        private Bitmap _bmpScreenshot;
+        private SolidBrush _brush;
         private readonly int[] _colorInts = new int[220];
 
         private SerialCon _serialPort;
@@ -54,23 +64,24 @@ namespace LED_Controller
                 ComboBoxCom.Items.Add(port);
             }
 
+            ComboBoxCom.SelectedIndex = 0;
             timer.Tick += dispacherTimer_Tick;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 60);
-            bmp_Screenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
+            _bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
                 Screen.PrimaryScreen.Bounds.Height,
                 PixelFormat.Format32bppArgb);
-            _gfxScreenshot = Graphics.FromImage(bmp_Screenshot);
-            worker.DoWork += worker_DoWork;
-            worker.RunWorkerCompleted += worker_completed;
+            _gfxScreenshot = Graphics.FromImage(_bmpScreenshot);
+            _worker.DoWork += worker_DoWork;
+            _worker.RunWorkerCompleted += worker_completed;
 
-            borderAlgo = new BorderAlgorithm(100, 5, bmp_Screenshot);
+            borderAlgo = new Algorithm(500, 10, _bmpScreenshot);
         }
 
         //Triggers whenever the background worker completes their task.
         private void worker_completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            ImagePreview.Source = ConvertFromImage(bmp_Screenshot);
-            ImageMostFrequent.Source = ConvertFromImage(bmp_mostFrequent);
+            ImagePreview.Source = ConvertFromImage(_bmpScreenshot);
+            ImageMostFrequent.Source = ConvertFromImage(_bmpMostFrequent);
             Color color = Color.FromArgb(_mostFrequent);
             ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
         }
@@ -79,18 +90,43 @@ namespace LED_Controller
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             CaptureScreen();
-            Color color = Color.FromArgb(_mostFrequent);
-            byte[] colorBytes = {color.R, color.G, color.B};
-            borderAlgo.Bitmap = bmp_Screenshot;
-            borderAlgo.CalculateBorderColors();
-            SendSerialData(colorBytes);
+            byte[] colorBytes;
+            switch (LedMode)
+            {
+                case Modes.MostFrequent:
+                    Color color = Color.FromArgb(_mostFrequent);
+                    colorBytes = new[] {color.R, color.G, color.B};
+                    _mostFrequent = MostFrequent(_colorInts, _colorInts.Length);
+                    SendSerialData(colorBytes);
+                    break;
+                case Modes.Borders:
+                    borderAlgo.Bitmap = _bmpScreenshot;
+                    int freqColor = borderAlgo.CalculateBorderColors();
+                    colorBytes = new[]
+                        {Color.FromArgb(freqColor).R, Color.FromArgb(freqColor).G, Color.FromArgb(freqColor).B};
 
+                    _mostFrequent = freqColor;
+                    SendSerialData(colorBytes);
+                    break;
+                case Modes.None:
+                    break;
+            }
         }
 
         //Trigger the worker every timer tick.
         private void dispacherTimer_Tick(object sender, EventArgs e)
         {
-            if (!worker.IsBusy) worker.RunWorkerAsync();
+            if (!_worker.IsBusy)
+            {
+                if (LedMode == Modes.None)
+                {
+                    _bmpScreenshot.Dispose();
+                }
+                else
+                {
+                    _worker.RunWorkerAsync();
+                }
+            }
         }
 
         public void CaptureScreen()
@@ -101,20 +137,19 @@ namespace LED_Controller
 
 
             var total = 0;
-            for (var x = 0; x < SCREEN_WIDTH; x += 100)
-            for (var y = 0; y < SCREEN_HEIGHT; y += 100)
+            for (var x = 0; x < _screenWidth; x += 100)
+            for (var y = 0; y < _screenHeight; y += 100)
             {
                 //Console.WriteLine(bmp_Screenshot.GetPixel(x, y));
-                _colorInts[total] = bmp_Screenshot.GetPixel(x, y).ToArgb();
+                _colorInts[total] = _bmpScreenshot.GetPixel(x, y).ToArgb();
                 total++;
             }
 
-            _mostFrequent = MostFrequent(_colorInts, _colorInts.Length);
-            bmp_mostFrequent = new Bitmap(30, 30);
-            using (gfx = Graphics.FromImage(bmp_mostFrequent))
-            using (brush = new SolidBrush(Color.FromArgb(_mostFrequent)))
+            _bmpMostFrequent = new Bitmap(30, 30);
+            using (gfx = Graphics.FromImage(_bmpMostFrequent))
+            using (_brush = new SolidBrush(Color.FromArgb(_mostFrequent)))
             {
-                gfx.FillRectangle(brush, 0, 0, 30, 30);
+                gfx.FillRectangle(_brush, 0, 0, 30, 30);
             }
         }
 
@@ -125,30 +160,56 @@ namespace LED_Controller
                 timer.Stop();
                 ComboBoxCom.IsEnabled = true;
                 RealTimeButton.Content = "Start Realtime";
+                BordersButton.IsEnabled = true;
+                ImagePreview.Source = null;
+                LedMode = Modes.None;
             }
             else
             {
+                LedMode = Modes.MostFrequent;
                 timer.Start();
                 ComboBoxCom.IsEnabled = false;
                 RealTimeButton.Content = "Stop Realtime";
+                BordersButton.IsEnabled = false;
             }
         }
+
         private void BordersButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (timer.IsEnabled)
+            {
+                timer.Stop();
+                ComboBoxCom.IsEnabled = true;
+                BordersButton.Content = "Start Border modus";
+                RealTimeButton.IsEnabled = true;
+                LedMode = Modes.None;
+            }
+            else
+            {
+                LedMode = Modes.Borders;
+                timer.Start();
+                ComboBoxCom.IsEnabled = false;
+                BordersButton.Content = "Stop Border modus";
+                RealTimeButton.IsEnabled = false;
+            }
         }
+
+
+        private BitmapImage bitmapImage;
+
         //Convert Image/Bitmap to ImageSource
         public ImageSource ConvertFromImage(Image image)
         {
             using (var ms = new MemoryStream())
             {
-                var bitmapImage = new BitmapImage();
+                bitmapImage = new BitmapImage();
                 image.Save(ms, ImageFormat.Bmp);
                 ms.Seek(0, SeekOrigin.Begin);
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
+                ms.Flush();
                 return bitmapImage;
             }
         }
@@ -217,7 +278,9 @@ namespace LED_Controller
                 Status.Text = $"Status: Connected to {ComboBoxCom.SelectedItem}";
             }
         }
+
         private byte b;
+
         private void DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             if (console != null && console.IsInitialized)
@@ -229,7 +292,7 @@ namespace LED_Controller
                     switch (console.Mode)
                     {
                         case ConsoleWindow.ConsoleModes.ReadByte:
-                            b = (byte)s.ReadByte();
+                            b = (byte) s.ReadByte();
                             console.BufferList.Add(b.ToString());
                             break;
                         case ConsoleWindow.ConsoleModes.NewLine:
@@ -239,7 +302,6 @@ namespace LED_Controller
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-
             }
         }
 

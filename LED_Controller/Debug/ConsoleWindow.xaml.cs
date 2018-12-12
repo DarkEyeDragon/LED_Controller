@@ -11,7 +11,11 @@ namespace LED_Controller.Debug
 {
     public partial class ConsoleWindow : Window
     {
-        public enum ConsoleModes { ReadByte, NewLine }
+        public enum ConsoleModes
+        {
+            ReadByte,
+            NewLine
+        }
 
 
         public ConsoleModes Mode { get; set; }
@@ -19,20 +23,20 @@ namespace LED_Controller.Debug
 
         public List<string> BufferList { get; set; }
         private readonly DispatcherTimer timer = new DispatcherTimer();
+
         public ConsoleWindow()
         {
             InitializeComponent();
             BufferList = new List<string>();
-            foreach (var consoleMode in Enum.GetValues(typeof(ConsoleModes)))
+            foreach (var consoleMode in System.Enum.GetValues(typeof(ConsoleModes)))
             {
                 ComboBoxMode.Items.Add(consoleMode);
-
             }
 
             ComboBoxMode.SelectedIndex = 0;
-                timer.Interval = new TimeSpan(0,0,0,0,80);
-                timer.Tick += PopQueue;
-                timer.Start();
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 80);
+            timer.Tick += PopQueue;
+            timer.Start();
         }
 
         public void PopQueue(object sender, EventArgs e)
@@ -43,6 +47,7 @@ namespace LED_Controller.Debug
                 {
                     AppendText(queueString);
                 }
+
                 BufferList.Clear();
             }
         }
@@ -59,7 +64,7 @@ namespace LED_Controller.Debug
                 Output.Inlines.Add(text);
                 ScrollViewer.ScrollToBottom();
                 if (Application.Current.MainWindow != null)
-                    ((MainWindow) Application.Current.MainWindow).BufferStatus.Value = Convert.ToInt16(text)*100/64;
+                    ((MainWindow) Application.Current.MainWindow).BufferStatus.Value = Convert.ToInt16(text) * 100 / 64;
             });
         }
 

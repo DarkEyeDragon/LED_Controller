@@ -15,7 +15,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80*"/>
+                                <ColumnDefinition Width="60*"/>
                                 <ColumnDefinition Width="50*"/>
                                 <ColumnDefinition Width="50*"/>
                                 <ColumnDefinition Width="64*"/>
@@ -33,18 +33,18 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock>Mode:</TextBlock>
-                        <TextBlock Name="Mode" Grid.Column="1">Realtime</TextBlock>
+                        <TextBlock Name="Mode" Grid.Column="1">Most Frequent</TextBlock>
                     </Grid>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="30"></ColumnDefinition>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                            <ColumnDefinition Width="70"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock>Color:</TextBlock>
-                        <Image Grid.Column="1" Name="ImageMostFrequent" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="30"/>
+                        <Image Grid.Column="1" Name="ImageMostFrequent" Height="20" HorizontalAlignment="Center" Width="30"/>
                         <TextBlock Name="ColorMostFrequent" Grid.Column="2"></TextBlock>
                     </Grid>
                 </StatusBarItem>
@@ -61,10 +61,10 @@
             </StatusBar>
             <Image Name="ImagePreview" HorizontalAlignment="Left" Height="270" Margin="10,10,0,0" VerticalAlignment="Top" Width="480"/>
             <StackPanel Width="175">
-                <Button Margin="0 20 0 10" Name="RealTimeButton" Content="Most Frequent" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="Button_Click"/>
-                <Button Margin="0 10" Name="BordersButton" Content="Borders" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="BordersButton_Click"/>
-                <Button Margin="0 10" Name="ButtonDebug" Content="Debug" HorizontalAlignment="Right" VerticalAlignment="Top" Width="92" Height="36" Click="ButtonDebug_OnClick"/>
-                <ComboBox Margin="0 10" Name="ComboBoxCom" SelectionChanged="ComboBox_SelectionChanged"/>
+                <Button Name="RealTimeButton" Content="Most Frequent" Height="35" Click="Button_Click"/>
+                <Button Name="BordersButton" Content="Borders" Height="35" Click="BordersButton_Click"/>
+                <Button Name="ButtonDebug" Content="Debug" Height="35" Click="ButtonDebug_OnClick"/>
+                <ComboBox Name="ComboBoxCom" Height="25" SelectionChanged="ComboBox_SelectionChanged"/>
             </StackPanel>
         </DockPanel>
     </Grid>
