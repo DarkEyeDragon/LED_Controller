@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -52,10 +53,11 @@ namespace LED_Controller
         private ConsoleWindow console;
 
         private int _mostFrequent;
-
+        Stopwatch stopwatch = new Stopwatch();
         public MainWindow()
         {
             InitializeComponent();
+            ;
             var ports = SerialPort.GetPortNames();
             ComboBoxCom.Items.Add("--None--");
             ComboBoxCom.Text = "Select COM port";
@@ -66,7 +68,7 @@ namespace LED_Controller
 
             ComboBoxCom.SelectedIndex = 0;
             timer.Tick += dispacherTimer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 60);
+            timer.Interval = new TimeSpan(0);
             _bmpScreenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
                 Screen.PrimaryScreen.Bounds.Height,
                 PixelFormat.Format32bppArgb);
@@ -80,10 +82,11 @@ namespace LED_Controller
         //Triggers whenever the background worker completes their task.
         private void worker_completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            ImagePreview.Source = ConvertFromImage(_bmpScreenshot);
-            ImageMostFrequent.Source = ConvertFromImage(_bmpMostFrequent);
+            //ImagePreview.Source = ConvertFromImage(_bmpScreenshot);
+            //ImageMostFrequent.Source = ConvertFromImage(_bmpMostFrequent);
             Color color = Color.FromArgb(_mostFrequent);
             ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
+            
         }
 
         //Tell the background worker what to do.
@@ -101,12 +104,15 @@ namespace LED_Controller
                     break;
                 case Modes.Borders:
                     borderAlgo.Bitmap = _bmpScreenshot;
-                    int freqColor = borderAlgo.CalculateBorderColors();
-                    colorBytes = new[]
-                        {Color.FromArgb(freqColor).R, Color.FromArgb(freqColor).G, Color.FromArgb(freqColor).B};
+                    List<int> list = borderAlgo.BordersPrecise(22, 19, 5);
+                    foreach (var i in list)
+                    {
+                        Color c = Color.FromArgb(i);
+                        SendSerialData(new []{c.R, c.G, c.B});
+                    }
 
-                    _mostFrequent = freqColor;
-                    SendSerialData(colorBytes);
+                    _mostFrequent = list[0];
+                    //SendSerialData(colorBytes);
                     break;
                 case Modes.None:
                     break;
@@ -116,16 +122,10 @@ namespace LED_Controller
         //Trigger the worker every timer tick.
         private void dispacherTimer_Tick(object sender, EventArgs e)
         {
+            stopwatch.Restart();
             if (!_worker.IsBusy)
             {
-                if (LedMode == Modes.None)
-                {
-                    _bmpScreenshot.Dispose();
-                }
-                else
-                {
-                    _worker.RunWorkerAsync();
-                }
+                  _worker.RunWorkerAsync();
             }
         }
 
@@ -159,7 +159,7 @@ namespace LED_Controller
             {
                 timer.Stop();
                 ComboBoxCom.IsEnabled = true;
-                RealTimeButton.Content = "Start Realtime";
+                RealTimeButton.Content = "Start Most Freq";
                 BordersButton.IsEnabled = true;
                 ImagePreview.Source = null;
                 LedMode = Modes.None;
@@ -169,7 +169,7 @@ namespace LED_Controller
                 LedMode = Modes.MostFrequent;
                 timer.Start();
                 ComboBoxCom.IsEnabled = false;
-                RealTimeButton.Content = "Stop Realtime";
+                RealTimeButton.Content = "Stop Most Freq";
                 BordersButton.IsEnabled = false;
             }
         }
@@ -198,7 +198,7 @@ namespace LED_Controller
         private BitmapImage bitmapImage;
 
         //Convert Image/Bitmap to ImageSource
-        public ImageSource ConvertFromImage(Image image)
+        /*public ImageSource ConvertFromImage(Image image)
         {
             using (var ms = new MemoryStream())
             {
@@ -212,7 +212,7 @@ namespace LED_Controller
                 ms.Flush();
                 return bitmapImage;
             }
-        }
+        }*/
 
         //Calculate the most frequent pixel in the screenshot
         private static int MostFrequent(int[] arr, int n)
@@ -254,6 +254,8 @@ namespace LED_Controller
         {
             if (_serialPort != null && _serialPort.IsOpen)
             {
+                stopwatch.Stop();
+            System.Diagnostics.Debug.WriteLine(stopwatch.ElapsedMilliseconds);
                 _serialPort?.Write(dataBytes);
             }
         }
@@ -274,6 +276,9 @@ namespace LED_Controller
             {
                 _serialPort = new SerialCon(ComboBoxCom.SelectedItem.ToString());
                 _serialPort.Open();
+                _serialPort.ReadTimeout = 500;
+                _serialPort.WriteTimeout = 24;
+                _serialPort.BaudRate = 115200;
                 _serialPort.DataReceived += DataReceived;
                 Status.Text = $"Status: Connected to {ComboBoxCom.SelectedItem}";
             }

@@ -32,14 +32,14 @@ namespace LED_Controller.Math
 
         public int CalculateBorderColors()
         {
-            _borderColorsList.Clear();           
+            _borderColorsList.Clear();
 
             for (int x = 1; x < ColorPixels; x++)
             {
                 for (int y = 1; y < BorderWidth; y++)
                 {
                     _borderColorsList.Add(Bitmap.GetPixel(x, y).ToArgb());
-                    _borderColorsList.Add(Bitmap.GetPixel(x, Bitmap.Height - x - 1).ToArgb());
+                    _borderColorsList.Add(Bitmap.GetPixel(x, Bitmap.Height - y - 1).ToArgb());
                 }
             }
 
@@ -52,7 +52,8 @@ namespace LED_Controller.Math
                     _borderColorsList.Add(Bitmap.GetPixel(x, Bitmap.Height - y - 1).ToArgb());
                 }
             }
-            return MostFrequent(_borderColorsList.ToArray(), _borderColorsList.Count);
+
+            return Average(_borderColorsList.ToArray());
         }
 
         //Calculate the most frequent pixel in the screenshot
@@ -88,6 +89,70 @@ namespace LED_Controller.Math
                 }
 
             return res;
+        }
+
+        private int Average(int[] data)
+        {
+            int sum = 0;
+            foreach (var t in data)
+            {
+                sum += t;
+            }
+
+            return sum / data.Length;
+        }
+
+        public List<int> BordersPrecise(int ledsX, int ledsY, int borderWidth)
+        {
+            int offsetX = Bitmap.Width / ledsX;
+            int offsetY = Bitmap.Height / ledsY;
+            int[] widthData = new int[borderWidth];
+            List<int> list = new List<int>();
+            //TOP
+            for (int x = 0; x < ledsX; x += offsetX)
+            {
+                for (int y = 0; y < borderWidth; y++)
+                {
+                    widthData[y] = Bitmap.GetPixel(x, y).ToArgb();
+                }
+
+                list.Add(Average(widthData));
+            }
+
+            //RIGHT
+            for (int y = 0; y < ledsY; y += offsetY)
+            {
+                for (int x = 0; x < borderWidth; x++)
+                {
+                    widthData[y] = Bitmap.GetPixel(Bitmap.Width - x - 1, y).ToArgb();
+                }
+
+                list.Add(Average(widthData));
+            }
+
+            //BOTTOM
+            for (int x = 0; x < ledsX; x += offsetX)
+            {
+                for (int y = 0; y < borderWidth; y++)
+                {
+                    widthData[y] = Bitmap.GetPixel(x, Bitmap.Height - y - 1).ToArgb();
+                }
+
+                list.Add(Average(widthData));
+            }
+
+            //LEFT
+            for (int y = 0; y < ledsY; y += offsetX)
+            {
+                for (int x = 0; x < borderWidth; x++)
+                {
+                    widthData[y] = Bitmap.GetPixel(x, y).ToArgb();
+                }
+
+                list.Add(Average(widthData));
+            }
+
+            return list;
         }
     }
 }

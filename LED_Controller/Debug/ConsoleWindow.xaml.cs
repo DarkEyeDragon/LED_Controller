@@ -63,8 +63,8 @@ namespace LED_Controller.Debug
 
                 Output.Inlines.Add(text);
                 ScrollViewer.ScrollToBottom();
-                if (Application.Current.MainWindow != null)
-                    ((MainWindow) Application.Current.MainWindow).BufferStatus.Value = Convert.ToInt16(text) * 100 / 64;
+                if (Application.Current.MainWindow != null) ;
+                //((MainWindow) Application.Current.MainWindow).BufferStatus.Value = Convert.ToInt16(text) * 100 / 64;
             });
         }
 
