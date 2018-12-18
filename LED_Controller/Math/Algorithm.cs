@@ -120,7 +120,7 @@ namespace LED_Controller.Math
             }
 
             //RIGHT
-            for (int y = 0; y < ledsY; y += offsetY)
+            /*for (int y = 0; y < ledsY; y += offsetY)
             {
                 for (int x = 0; x < borderWidth; x++)
                 {
@@ -150,7 +150,7 @@ namespace LED_Controller.Math
                 }
 
                 list.Add(Average(widthData));
-            }
+            }*/
 
             return list;
         }

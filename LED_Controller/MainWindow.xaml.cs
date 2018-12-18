@@ -54,6 +54,7 @@ namespace LED_Controller
 
         private int _mostFrequent;
         Stopwatch stopwatch = new Stopwatch();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -86,7 +87,6 @@ namespace LED_Controller
             //ImageMostFrequent.Source = ConvertFromImage(_bmpMostFrequent);
             Color color = Color.FromArgb(_mostFrequent);
             ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
-            
         }
 
         //Tell the background worker what to do.
@@ -108,7 +108,7 @@ namespace LED_Controller
                     foreach (var i in list)
                     {
                         Color c = Color.FromArgb(i);
-                        SendSerialData(new []{c.R, c.G, c.B});
+                        SendSerialData(new[] {c.R, c.G, c.B});
                     }
 
                     _mostFrequent = list[0];
@@ -125,7 +125,7 @@ namespace LED_Controller
             stopwatch.Restart();
             if (!_worker.IsBusy)
             {
-                  _worker.RunWorkerAsync();
+                _worker.RunWorkerAsync();
             }
         }
 
@@ -255,7 +255,7 @@ namespace LED_Controller
             if (_serialPort != null && _serialPort.IsOpen)
             {
                 stopwatch.Stop();
-            System.Diagnostics.Debug.WriteLine(stopwatch.ElapsedMilliseconds);
+                System.Diagnostics.Debug.WriteLine(stopwatch.ElapsedMilliseconds);
                 _serialPort?.Write(dataBytes);
             }
         }
