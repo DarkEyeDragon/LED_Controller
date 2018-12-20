@@ -38,7 +38,7 @@ namespace LED_Controller
         private readonly int _screenHeight = Screen.PrimaryScreen.Bounds.Height;
         private readonly int _screenWidth = Screen.PrimaryScreen.Bounds.Width;
         private readonly BackgroundWorker _worker = new BackgroundWorker();
-        private Bitmap _bmpMostFrequent = new Bitmap(30, 30);
+        private Bitmap _bmpCurrentColor = new Bitmap(30, 30);
         private Bitmap _bmpScreenshot;
         private SolidBrush _brush;
         private readonly int[] _colorInts = new int[220];
@@ -52,7 +52,7 @@ namespace LED_Controller
         //Console window
         private ConsoleWindow console;
 
-        private int _mostFrequent;
+        private int _currentColor;
         Stopwatch stopwatch = new Stopwatch();
 
         public MainWindow()
@@ -84,9 +84,7 @@ namespace LED_Controller
         private void worker_completed(object sender, RunWorkerCompletedEventArgs e)
         {
             //ImagePreview.Source = ConvertFromImage(_bmpScreenshot);
-            //ImageMostFrequent.Source = ConvertFromImage(_bmpMostFrequent);
-            Color color = Color.FromArgb(_mostFrequent);
-            ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
+            SetColorPreview();
         }
 
         //Tell the background worker what to do.
@@ -97,9 +95,9 @@ namespace LED_Controller
             switch (LedMode)
             {
                 case Modes.MostFrequent:
-                    Color color = Color.FromArgb(_mostFrequent);
+                    Color color = Color.FromArgb(_currentColor);
                     colorBytes = new[] {color.R, color.G, color.B};
-                    _mostFrequent = MostFrequent(_colorInts, _colorInts.Length);
+                    _currentColor = MostFrequent(_colorInts, _colorInts.Length);
                     SendSerialData(colorBytes);
                     break;
                 case Modes.Borders:
@@ -111,7 +109,7 @@ namespace LED_Controller
                         SendSerialData(new[] {c.R, c.G, c.B});
                     }
 
-                    _mostFrequent = list[0];
+                    _currentColor = list[0];
                     //SendSerialData(colorBytes);
                     break;
                 case Modes.None:
@@ -144,13 +142,6 @@ namespace LED_Controller
                 _colorInts[total] = _bmpScreenshot.GetPixel(x, y).ToArgb();
                 total++;
             }
-
-            _bmpMostFrequent = new Bitmap(30, 30);
-            using (gfx = Graphics.FromImage(_bmpMostFrequent))
-            using (_brush = new SolidBrush(Color.FromArgb(_mostFrequent)))
-            {
-                gfx.FillRectangle(_brush, 0, 0, 30, 30);
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -161,7 +152,6 @@ namespace LED_Controller
                 ComboBoxCom.IsEnabled = true;
                 RealTimeButton.Content = "Start Most Freq";
                 BordersButton.IsEnabled = true;
-                ImagePreview.Source = null;
                 LedMode = Modes.None;
             }
             else
@@ -198,7 +188,7 @@ namespace LED_Controller
         private BitmapImage bitmapImage;
 
         //Convert Image/Bitmap to ImageSource
-        /*public ImageSource ConvertFromImage(Image image)
+        public ImageSource ConvertFromImage(Image image)
         {
             using (var ms = new MemoryStream())
             {
@@ -212,7 +202,7 @@ namespace LED_Controller
                 ms.Flush();
                 return bitmapImage;
             }
-        }*/
+        }
 
         //Calculate the most frequent pixel in the screenshot
         private static int MostFrequent(int[] arr, int n)
@@ -317,6 +307,37 @@ namespace LED_Controller
                 console = new ConsoleWindow();
                 console.Show();
             }
+        }
+
+        private void ButtonSetColor_Click(object sender, RoutedEventArgs e)
+        {
+            var color = Color.FromArgb((byte)SliderRed.Value, (byte)SliderGreen.Value, (byte)SliderBlue.Value);
+            _currentColor = color.ToArgb();
+            byte[] colorBytes = {color.R, color.G, color.B, color.R, color.G, color.B, color.R, color.G, color.B, color.R, color.G, color.B};
+            SetColorPreview();
+            SendSerialData(colorBytes);
+        }
+
+        private void SliderRed_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            LabelRedValue.Content = e.NewValue;
+        }
+
+        private void SliderGreen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            LabelGreenValue.Content = e.NewValue;
+        }
+
+        private void SliderBlue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            LabelBlueValue.Content = e.NewValue;
+        }
+
+        public void SetColorPreview()
+        {
+            ImageMostFrequent.Source = ConvertFromImage(_bmpCurrentColor);
+            Color color = Color.FromArgb(_currentColor);
+            ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
         }
     }
 }

@@ -12,13 +12,13 @@
                     <ItemsPanelTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60*"/>
-                                <ColumnDefinition Width="50*"/>
-                                <ColumnDefinition Width="50*"/>
-                                <ColumnDefinition Width="64*"/>
+                                <ColumnDefinition Width="60*" />
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="50*" />
+                                <ColumnDefinition Width="64*" />
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </ItemsPanelTemplate>
@@ -29,8 +29,8 @@
                 <StatusBarItem Grid.Column="1">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="40" />
+                            <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock>Mode:</TextBlock>
                         <TextBlock Name="Mode" Grid.Column="1">Most Frequent</TextBlock>
@@ -39,34 +39,80 @@
                 <StatusBarItem Grid.Column="2">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="70"></ColumnDefinition>
+                            <ColumnDefinition Width="40" />
+                            <ColumnDefinition Width="40" />
+                            <ColumnDefinition Width="70" />
                         </Grid.ColumnDefinitions>
                         <TextBlock>Color:</TextBlock>
-                        <Image Grid.Column="1" Name="ImageMostFrequent" Height="20" HorizontalAlignment="Center" Width="30"/>
-                        <TextBlock Name="ColorMostFrequent" Grid.Column="2"></TextBlock>
+                        <Image Grid.Column="1" Name="ImageMostFrequent" Height="20" HorizontalAlignment="Center"
+                               Width="30" />
+                        <TextBlock Name="ColorMostFrequent" Grid.Column="2" />
                     </Grid>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="4">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label>Buffer: </Label>
-                        <ProgressBar Grid.Column="1" Name="BufferStatus" Value="0" IsEnabled="False" Height="16" Width="120"></ProgressBar>
+                        <Label>Buffer:</Label>
+                        <ProgressBar Grid.Column="1" Name="BufferStatus" Value="0" IsEnabled="False" Height="16"
+                                     Width="120" />
                     </Grid>
                 </StatusBarItem>
             </StatusBar>
-            <Image Name="ImagePreview" HorizontalAlignment="Left" Height="270" Margin="10,10,0,0" VerticalAlignment="Top" Width="480"/>
-            <StackPanel Width="175">
-                <Button Name="RealTimeButton" Content="Most Frequent" Height="35" Click="Button_Click"/>
-                <Button Name="BordersButton" Content="Borders" Height="35" Click="BordersButton_Click"/>
-                <Button Name="ButtonDebug" Content="Debug" Height="35" Click="ButtonDebug_OnClick"/>
-                <ComboBox Name="ComboBoxCom" Height="25" SelectionChanged="ComboBox_SelectionChanged"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="140"></RowDefinition>
+                    <RowDefinition Height="100"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Button Name="RealTimeButton" Content="Most Frequent" Height="35" Click="Button_Click" />
+                    <Button Name="BordersButton" Content="Borders" Height="35" Click="BordersButton_Click" />
+                    <Button Name="ButtonDebug" Content="Debug" Height="35" Click="ButtonDebug_OnClick" />
+                    <ComboBox Name="ComboBoxCom" Height="25" SelectionChanged="ComboBox_SelectionChanged" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Slider}">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                        <Style TargetType="{x:Type Label}">
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="70"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <Slider Grid.Row="0" Grid.Column="1" Name="SliderRed" ValueChanged="SliderRed_OnValueChanged" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" />
+                        <Slider Grid.Row="1" Grid.Column="1" Name="SliderGreen" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderGreen_ValueChanged" />
+                        <Slider Grid.Row="2" Grid.Column="1" Name="SliderBlue" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderBlue_ValueChanged" />
+
+                        <Label Grid.Row="0" Grid.Column="0">Red</Label>
+                        <Label Grid.Row="1" Grid.Column="0">Green</Label>
+                        <Label Grid.Row="2" Grid.Column="0">Blue</Label>
+
+                        <Label Grid.Row="0" Grid.Column="2" Name="LabelRedValue">0</Label>
+                        <Label Grid.Row="1" Grid.Column="2" Name="LabelGreenValue">0</Label>
+                        <Label Grid.Row="2" Grid.Column="2" Name="LabelBlueValue">0</Label>
+                    </Grid>
+                </StackPanel>
+                <Button Name="ButtonSetColor" Grid.Column="1" Grid.Row="1" Margin="225, 32" Click="ButtonSetColor_Click">Set</Button>
+            </Grid>
         </DockPanel>
     </Grid>
-
 </Window>

@@ -19,7 +19,6 @@ namespace LED_Controller.Debug
 
 
         public ConsoleModes Mode { get; set; }
-        private SerialPort _serialPort;
 
         public List<string> BufferList { get; set; }
         private readonly DispatcherTimer timer = new DispatcherTimer();
@@ -66,11 +65,6 @@ namespace LED_Controller.Debug
                 if (Application.Current.MainWindow != null) ;
                 //((MainWindow) Application.Current.MainWindow).BufferStatus.Value = Convert.ToInt16(text) * 100 / 64;
             });
-        }
-
-        private void ConsoleWindow_OnClosed(object sender, EventArgs e)
-        {
-            _serialPort = null;
         }
 
         private void ComboBoxMode_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
