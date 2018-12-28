@@ -102,6 +102,7 @@
     <Compile Include="Serial\SerialCon.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\ColorPreview.cs" />
     <Page Include="Debug\ConsoleWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

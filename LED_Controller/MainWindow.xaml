@@ -76,7 +76,7 @@
                     <Button Name="ButtonDebug" Content="Debug" Height="35" Click="ButtonDebug_OnClick" />
                     <ComboBox Name="ComboBoxCom" Height="25" SelectionChanged="ComboBox_SelectionChanged" />
                 </StackPanel>
-                <StackPanel Grid.Row="0" Grid.Column="1">
+                <StackPanel Grid.Row="0" Grid.Column="1" Name="StackPanelSliders">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Slider}">
                             <Setter Property="VerticalAlignment" Value="Center"></Setter>

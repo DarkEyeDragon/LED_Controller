@@ -8,6 +8,6 @@ namespace LED_Controller.Enum
 {
     enum Modes
     {
-        MostFrequent, Borders
+        MostFrequent, Borders, Manual
     }
 }

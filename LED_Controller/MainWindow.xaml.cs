@@ -15,6 +15,7 @@ using System.Windows.Threading;
 using LED_Controller.Debug;
 using LED_Controller.Math;
 using LED_Controller.Serial;
+using LED_Controller.Utils;
 using Color = System.Drawing.Color;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
@@ -26,11 +27,13 @@ namespace LED_Controller
         {
             MostFrequent,
             Borders,
+            Manual,
             None
         }
 
         public Modes LedMode { get; set; }
 
+        private ColorPreview colorPreview;
 
         private Algorithm borderAlgo;
 
@@ -58,7 +61,6 @@ namespace LED_Controller
         public MainWindow()
         {
             InitializeComponent();
-            ;
             var ports = SerialPort.GetPortNames();
             ComboBoxCom.Items.Add("--None--");
             ComboBoxCom.Text = "Select COM port";
@@ -78,12 +80,13 @@ namespace LED_Controller
             _worker.RunWorkerCompleted += worker_completed;
 
             borderAlgo = new Algorithm(500, 10, _bmpScreenshot);
+            colorPreview = new ColorPreview(ImageMostFrequent);
+
         }
 
         //Triggers whenever the background worker completes their task.
         private void worker_completed(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //ImagePreview.Source = ConvertFromImage(_bmpScreenshot);
+        {            
             SetColorPreview();
         }
 
@@ -153,6 +156,8 @@ namespace LED_Controller
                 RealTimeButton.Content = "Start Most Freq";
                 BordersButton.IsEnabled = true;
                 LedMode = Modes.None;
+                ButtonSetColor.IsEnabled = true;
+
             }
             else
             {
@@ -161,6 +166,8 @@ namespace LED_Controller
                 ComboBoxCom.IsEnabled = false;
                 RealTimeButton.Content = "Stop Most Freq";
                 BordersButton.IsEnabled = false;
+                ButtonSetColor.IsEnabled = false;
+                Mode.Text = "Most frequent";
             }
         }
 
@@ -173,6 +180,7 @@ namespace LED_Controller
                 BordersButton.Content = "Start Border modus";
                 RealTimeButton.IsEnabled = true;
                 LedMode = Modes.None;
+                ButtonSetColor.IsEnabled = true;
             }
             else
             {
@@ -181,26 +189,8 @@ namespace LED_Controller
                 ComboBoxCom.IsEnabled = false;
                 BordersButton.Content = "Stop Border modus";
                 RealTimeButton.IsEnabled = false;
-            }
-        }
-
-
-        private BitmapImage bitmapImage;
-
-        //Convert Image/Bitmap to ImageSource
-        public ImageSource ConvertFromImage(Image image)
-        {
-            using (var ms = new MemoryStream())
-            {
-                bitmapImage = new BitmapImage();
-                image.Save(ms, ImageFormat.Bmp);
-                ms.Seek(0, SeekOrigin.Begin);
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                ms.Flush();
-                return bitmapImage;
+                ButtonSetColor.IsEnabled = false;
+                Mode.Text = "Border";
             }
         }
 
@@ -316,6 +306,7 @@ namespace LED_Controller
             byte[] colorBytes = {color.R, color.G, color.B, color.R, color.G, color.B, color.R, color.G, color.B, color.R, color.G, color.B};
             SetColorPreview();
             SendSerialData(colorBytes);
+            Mode.Text = "Manual";
         }
 
         private void SliderRed_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -335,7 +326,9 @@ namespace LED_Controller
 
         public void SetColorPreview()
         {
-            ImageMostFrequent.Source = ConvertFromImage(_bmpCurrentColor);
+            colorPreview.Color = Color.FromArgb(_currentColor);
+            colorPreview.Update();
+            ImageMostFrequent.Source = colorPreview.ImageSource;
             Color color = Color.FromArgb(_currentColor);
             ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
         }
