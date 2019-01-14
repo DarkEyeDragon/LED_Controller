@@ -66,16 +66,8 @@ namespace LED_Controller.Math
             for (var i = 0; i < n; i++)
             {
                 var key = arr[i];
-                if (hp.ContainsKey(key))
-                {
-                    var freq = hp[key];
-                    freq++;
-                    hp[key] = freq;
-                }
-                else
-                {
-                    hp.Add(key, 1);
-                }
+                hp.TryGetValue(key, out var freq);
+                hp[key] = freq + 1;
             }
 
             // find max frequency. 
@@ -116,18 +108,18 @@ namespace LED_Controller.Math
                     widthData[y] = Bitmap.GetPixel(x, y).ToArgb();
                 }
 
-                list.Add(Average(widthData));
+                list.Add(MostFrequent(widthData, widthData.Length));
             }
 
             //RIGHT
-            /*for (int y = 0; y < ledsY; y += offsetY)
+            for (int y = 0; y < ledsY; y += offsetY)
             {
                 for (int x = 0; x < borderWidth; x++)
                 {
-                    widthData[y] = Bitmap.GetPixel(Bitmap.Width - x - 1, y).ToArgb();
+                    widthData[x] = Bitmap.GetPixel(Bitmap.Width - x - 1, y).ToArgb();
                 }
 
-                list.Add(Average(widthData));
+                list.Add(MostFrequent(widthData, widthData.Length));
             }
 
             //BOTTOM
@@ -138,7 +130,7 @@ namespace LED_Controller.Math
                     widthData[y] = Bitmap.GetPixel(x, Bitmap.Height - y - 1).ToArgb();
                 }
 
-                list.Add(Average(widthData));
+                list.Add(MostFrequent(widthData, widthData.Length));
             }
 
             //LEFT
@@ -146,11 +138,11 @@ namespace LED_Controller.Math
             {
                 for (int x = 0; x < borderWidth; x++)
                 {
-                    widthData[y] = Bitmap.GetPixel(x, y).ToArgb();
+                    widthData[x] = Bitmap.GetPixel(x, y).ToArgb();
                 }
 
-                list.Add(Average(widthData));
-            }*/
+                list.Add(MostFrequent(widthData, widthData.Length));
+            }
 
             return list;
         }

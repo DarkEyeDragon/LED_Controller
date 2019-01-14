@@ -79,7 +79,7 @@ namespace LED_Controller
             _worker.DoWork += worker_DoWork;
             _worker.RunWorkerCompleted += worker_completed;
 
-            borderAlgo = new Algorithm(500, 10, _bmpScreenshot);
+            borderAlgo = new Algorithm(5000, 10, _bmpScreenshot);
             colorPreview = new ColorPreview(ImageMostFrequent);
 
         }
@@ -105,7 +105,7 @@ namespace LED_Controller
                     break;
                 case Modes.Borders:
                     borderAlgo.Bitmap = _bmpScreenshot;
-                    List<int> list = borderAlgo.BordersPrecise(22, 19, 5);
+                    List<int> list = borderAlgo.BordersPrecise(22, 19, 80);
                     foreach (var i in list)
                     {
                         Color c = Color.FromArgb(i);
@@ -153,7 +153,7 @@ namespace LED_Controller
             {
                 timer.Stop();
                 ComboBoxCom.IsEnabled = true;
-                RealTimeButton.Content = "Start Most Freq";
+                RealTimeButton.Content = "Most Frequent";
                 BordersButton.IsEnabled = true;
                 LedMode = Modes.None;
                 ButtonSetColor.IsEnabled = true;
@@ -164,7 +164,7 @@ namespace LED_Controller
                 LedMode = Modes.MostFrequent;
                 timer.Start();
                 ComboBoxCom.IsEnabled = false;
-                RealTimeButton.Content = "Stop Most Freq";
+                RealTimeButton.Content = "Stop";
                 BordersButton.IsEnabled = false;
                 ButtonSetColor.IsEnabled = false;
                 Mode.Text = "Most frequent";
@@ -177,7 +177,7 @@ namespace LED_Controller
             {
                 timer.Stop();
                 ComboBoxCom.IsEnabled = true;
-                BordersButton.Content = "Start Border modus";
+                BordersButton.Content = "Border";
                 RealTimeButton.IsEnabled = true;
                 LedMode = Modes.None;
                 ButtonSetColor.IsEnabled = true;
@@ -187,7 +187,7 @@ namespace LED_Controller
                 LedMode = Modes.Borders;
                 timer.Start();
                 ComboBoxCom.IsEnabled = false;
-                BordersButton.Content = "Stop Border modus";
+                BordersButton.Content = "Stop";
                 RealTimeButton.IsEnabled = false;
                 ButtonSetColor.IsEnabled = false;
                 Mode.Text = "Border";

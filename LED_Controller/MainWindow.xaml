@@ -4,10 +4,69 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="LED Controller" Height="450" Width="800" UseLayoutRounding="True">
+        Title="LED Controller" Height="450" Width="800" UseLayoutRounding="True" Background="#FF33333D">
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="#F3664E" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Foreground" Value="FloralWhite" />
+                <Setter Property="MaxWidth" Value="120" />
+                <Setter Property="MaxHeight" Value="40" />
+                <Setter Property="Height" Value="50" />
+                <Setter Property="Margin" Value="10" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="Transparent">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#FB8368"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="#FF4E4E53"/>
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="BorderBrush" Value="#FFFB2E00"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type ComboBox}">
+                <Setter Property="Background" Value="#F3664E" />
+                <Setter Property="Margin" Value="10" />
+                <Setter Property="MaxWidth" Value="120" />
+                
+            </Style>
+            <Style TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="Height" Value="20"></Setter>
+                <Setter Property="BorderBrush" Value="Transparent"></Setter>
+                <Setter Property="OverridesDefaultStyle" Value="True"></Setter>
+                <Setter Property="Background" Value="#F3664E" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#FB8368"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="#FF4E4E53"/>
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="BorderBrush" Value="#FFFB2E00"/>
+                    </Trigger>
+                </Style.Triggers>
+
+            </Style>
+        </Grid.Resources>
         <DockPanel>
-            <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar DockPanel.Dock="Bottom" Background="#FF2C2C32">
                 <StatusBar.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -24,7 +83,7 @@
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
                 <StatusBarItem>
-                    <TextBlock Name="Status">Status: No errors</TextBlock>
+                    <TextBlock Name="Status" Foreground="White">Status: No errors</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="1">
                     <Grid>
@@ -32,8 +91,8 @@
                             <ColumnDefinition Width="40" />
                             <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock>Mode:</TextBlock>
-                        <TextBlock Name="Mode" Grid.Column="1">Most Frequent</TextBlock>
+                        <TextBlock Foreground="White">Mode:</TextBlock>
+                        <TextBlock Name="Mode" Grid.Column="1" Foreground="White">Most Frequent</TextBlock>
                     </Grid>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="2">
@@ -41,12 +100,12 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="40" />
                             <ColumnDefinition Width="40" />
-                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock>Color:</TextBlock>
+                        <TextBlock Foreground="White">Color:</TextBlock>
                         <Image Grid.Column="1" Name="ImageMostFrequent" Height="20" HorizontalAlignment="Center"
                                Width="30" />
-                        <TextBlock Name="ColorMostFrequent" Grid.Column="2" />
+                        <TextBlock Name="ColorMostFrequent" Grid.Column="2" Foreground="White" />
                     </Grid>
                 </StatusBarItem>
                 <StatusBarItem Grid.Column="4">
@@ -55,63 +114,76 @@
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label>Buffer:</Label>
+                        <Label Foreground="White">Buffer:</Label>
                         <ProgressBar Grid.Column="1" Name="BufferStatus" Value="0" IsEnabled="False" Height="16"
                                      Width="120" />
                     </Grid>
                 </StatusBarItem>
             </StatusBar>
-            <Grid>
+            <Grid Margin="0, 15, 0, 0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="177" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="140"></RowDefinition>
-                    <RowDefinition Height="100"></RowDefinition>
+                    <RowDefinition Height="250" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Column="0">
-                    <Button Name="RealTimeButton" Content="Most Frequent" Height="35" Click="Button_Click" />
-                    <Button Name="BordersButton" Content="Borders" Height="35" Click="BordersButton_Click" />
-                    <Button Name="ButtonDebug" Content="Debug" Height="35" Click="ButtonDebug_OnClick" />
-                    <ComboBox Name="ComboBoxCom" Height="25" SelectionChanged="ComboBox_SelectionChanged" />
+                    <Button Name="RealTimeButton" Content="Most Frequent" Click="Button_Click" />
+                    <Button x:Name="BordersButton" Content="Borders" Click="BordersButton_Click" />
+                    <Button x:Name="ButtonDebug" Content="Debug" Click="ButtonDebug_OnClick" />
+                    <ComboBox x:Name="ComboBoxCom" SelectionChanged="ComboBox_SelectionChanged"/>
                 </StackPanel>
                 <StackPanel Grid.Row="0" Grid.Column="1" Name="StackPanelSliders">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Slider}">
-                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="VerticalAlignment" Value="Center" />
                         </Style>
                         <Style TargetType="{x:Type Label}">
-                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="Margin" Value="10"></Setter>
                         </Style>
                     </StackPanel.Resources>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="70"></ColumnDefinition>
+                            <ColumnDefinition Width="70" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40" />
                             <RowDefinition Height="40" />
                             <RowDefinition Height="40" />
+                            <RowDefinition Height="60" />
                         </Grid.RowDefinitions>
 
-                        <Slider Grid.Row="0" Grid.Column="1" Name="SliderRed" ValueChanged="SliderRed_OnValueChanged" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" />
-                        <Slider Grid.Row="1" Grid.Column="1" Name="SliderGreen" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderGreen_ValueChanged" />
-                        <Slider Grid.Row="2" Grid.Column="1" Name="SliderBlue" SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5" ValueChanged="SliderBlue_ValueChanged" />
+                        <Slider Grid.Row="0" Grid.Column="1" Name="SliderRed" ValueChanged="SliderRed_OnValueChanged"
+                                SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight"
+                                IsSnapToTickEnabled="True" TickFrequency="5" />
+                        <Slider Grid.Row="1" Grid.Column="1" Name="SliderGreen" SmallChange="1" LargeChange="10"
+                                Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5"
+                                ValueChanged="SliderGreen_ValueChanged" />
+                        <Slider Grid.Row="2" Grid.Column="1" Name="SliderBlue" SmallChange="1" LargeChange="10"
+                                Maximum="255" TickPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="5"
+                                ValueChanged="SliderBlue_ValueChanged" />
 
-                        <Label Grid.Row="0" Grid.Column="0">Red</Label>
-                        <Label Grid.Row="1" Grid.Column="0">Green</Label>
-                        <Label Grid.Row="2" Grid.Column="0">Blue</Label>
+                        <Label Grid.Row="0" Grid.Column="0" Foreground="White">Red</Label>
+                        <Label Grid.Row="1" Grid.Column="0" Foreground="White">Green</Label>
+                        <Label Grid.Row="2" Grid.Column="0" Foreground="White">Blue</Label>
 
-                        <Label Grid.Row="0" Grid.Column="2" Name="LabelRedValue">0</Label>
-                        <Label Grid.Row="1" Grid.Column="2" Name="LabelGreenValue">0</Label>
-                        <Label Grid.Row="2" Grid.Column="2" Name="LabelBlueValue">0</Label>
+                        <Label Grid.Row="0" Grid.Column="2" Name="LabelRedValue" Foreground="White">0</Label>
+                        <Label Grid.Row="1" Grid.Column="2" Name="LabelGreenValue" Foreground="White">0</Label>
+                        <Label Grid.Row="2" Grid.Column="2" Name="LabelBlueValue" Foreground="White">0</Label>
+                        <Button Name="ButtonSetColor" Grid.Column="1" Grid.Row="3" Click="ButtonSetColor_Click">
+                            Set
+                        </Button>
                     </Grid>
                 </StackPanel>
-                <Button Name="ButtonSetColor" Grid.Column="1" Grid.Row="1" Margin="225, 32" Click="ButtonSetColor_Click">Set</Button>
+                
             </Grid>
         </DockPanel>
     </Grid>
