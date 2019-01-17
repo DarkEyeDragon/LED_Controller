@@ -8,16 +8,13 @@ using System.Threading.Tasks;
 
 namespace LED_Controller.Serial
 {
-    class SerialCon : SerialPort
+    internal class SerialCon : SerialPort
     {
-        public SerialPort SerialPort { get; set; }
-
         public SerialCon(string portName) : base(portName)
         {
             BaudRate = 115200;
             ReadTimeout = 50500;
             WriteTimeout = 50500;
-            SerialPort = this;
         }
         public void Write(byte[] bytes)
         {

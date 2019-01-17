@@ -46,7 +46,7 @@
                 <Setter Property="MaxWidth" Value="120" />
                 
             </Style>
-            <Style TargetType="{x:Type ComboBoxItem}">
+            <!--<Style TargetType="{x:Type ComboBoxItem}">
                 <Setter Property="Height" Value="20"></Setter>
                 <Setter Property="BorderBrush" Value="Transparent"></Setter>
                 <Setter Property="OverridesDefaultStyle" Value="True"></Setter>
@@ -63,7 +63,7 @@
                     </Trigger>
                 </Style.Triggers>
 
-            </Style>
+            </Style>-->
         </Grid.Resources>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom" Background="#FF2C2C32">

@@ -1,23 +1,15 @@
+## LED controller application
+### Use cases:
+- Control LED's based on screen capture
+- Control LED's manually.
+- Debug while testing.
+### What it is not:
+- A full fletched LED controller that works for all LED strips
+- A plug and play application. You will have to manually select your port every time.
+### Planned features:
+- More flexible use to work for more use cases.
+- Single LED adressing.
+- Optimize code to send data thats more customizable and less resource intensive.
+- Improve Arduino code.
 
-
-#### Protocol specification
-
-LED_Controller protocol is used for serial communication between microcontrollers/computers.
-
-
-This protocol is designed for 9600 baud
-##### RFC (request for connection)
-2 requests with 0x11 should be sent.
-Then the receiving device replies with 0x1 or 0x0
-
-##### When replied with 0x0
-Your request has been refused. 
-
-##### When replied with 0x1
-Your connection has been accepted. And the receiving device will now accept your data.
-
-##### Closing connection
-The connection should be closed before disconnecting the device.
-This should be done with the following sequence:
-
-0xAD followed with 0xAC
+![screenshot](https://i.imgur.com/4xo0Ulh.png?1)

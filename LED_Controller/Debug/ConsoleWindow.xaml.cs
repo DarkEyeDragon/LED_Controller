@@ -21,7 +21,7 @@ namespace LED_Controller.Debug
         public ConsoleModes Mode { get; set; }
 
         public List<string> BufferList { get; set; }
-        private readonly DispatcherTimer timer = new DispatcherTimer();
+        private readonly DispatcherTimer _timer = new DispatcherTimer();
 
         public ConsoleWindow()
         {
@@ -33,12 +33,12 @@ namespace LED_Controller.Debug
             }
 
             ComboBoxMode.SelectedIndex = 0;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 80);
-            timer.Tick += PopQueue;
-            timer.Start();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 80);
+            _timer.Tick += PopQueue;
+            _timer.Start();
         }
 
-        public void PopQueue(object sender, EventArgs e)
+        private void PopQueue(object sender, EventArgs e)
         {
             lock (BufferList)
             {
@@ -51,7 +51,7 @@ namespace LED_Controller.Debug
             }
         }
 
-        public void AppendText(string text)
+        private void AppendText(string text)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
