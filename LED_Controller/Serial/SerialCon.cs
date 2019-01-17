@@ -21,16 +21,14 @@ namespace LED_Controller.Serial
         }
         public void Write(byte[] bytes)
         {
-            if (SerialPort.IsOpen)
+            if (!IsOpen) return;
+            try
             {
-                try
-                {
-                    Write(bytes, 0, bytes.Length);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                Write(bytes, 0, bytes.Length);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
     }
