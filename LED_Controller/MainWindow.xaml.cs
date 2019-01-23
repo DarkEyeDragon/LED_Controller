@@ -294,6 +294,7 @@ namespace LED_Controller
             SetColorPreview();
             SendSerialData(colorBytes);
             Mode.Text = "Manual";
+            ColorPicker.SelectedColor = System.Windows.Media.Color.FromRgb((byte)SliderRed.Value, (byte)SliderGreen.Value, (byte)SliderBlue.Value);
         }
 
         private void SliderRed_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -318,6 +319,14 @@ namespace LED_Controller
             ImageMostFrequent.Source = _colorPreview.ImageSource;
             var color = Color.FromArgb(_currentColor);
             ColorMostFrequent.Text = $"({color.R}, {color.G}, {color.B})";
+        }
+
+        private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
+        {
+            System.Windows.Media.Color mColor = (System.Windows.Media.Color)e.NewValue;
+            SliderRed.Value = mColor.R;
+            SliderGreen.Value = mColor.G;
+            SliderBlue.Value = mColor.B;
         }
     }
 }

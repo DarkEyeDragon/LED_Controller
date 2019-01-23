@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="LED Controller" Height="450" Width="800" UseLayoutRounding="True" Background="#FF33333D">
     <Grid>
@@ -44,7 +45,7 @@
                 <Setter Property="Background" Value="#F3664E" />
                 <Setter Property="Margin" Value="10" />
                 <Setter Property="MaxWidth" Value="120" />
-                
+
             </Style>
             <!--<Style TargetType="{x:Type ComboBoxItem}">
                 <Setter Property="Height" Value="20"></Setter>
@@ -160,6 +161,7 @@
                             <RowDefinition Height="40" />
                             <RowDefinition Height="60" />
                         </Grid.RowDefinitions>
+                        <xctk:ColorPicker Name="ColorPicker" DisplayColorAndName="False"  ShowAvailableColors="False"  ColorMode="ColorCanvas" SelectedColorChanged="ColorPicker_SelectedColorChanged" Margin="322,28,10,10" Grid.Row="3" Grid.Column="1"/>
 
                         <Slider Grid.Row="0" Grid.Column="1" Name="SliderRed" ValueChanged="SliderRed_OnValueChanged"
                                 SmallChange="1" LargeChange="10" Maximum="255" TickPlacement="BottomRight"
@@ -178,12 +180,12 @@
                         <Label Grid.Row="0" Grid.Column="2" Name="LabelRedValue" Foreground="White">0</Label>
                         <Label Grid.Row="1" Grid.Column="2" Name="LabelGreenValue" Foreground="White">0</Label>
                         <Label Grid.Row="2" Grid.Column="2" Name="LabelBlueValue" Foreground="White">0</Label>
-                        <Button Name="ButtonSetColor" Grid.Column="1" Grid.Row="3" Click="ButtonSetColor_Click">
+                        <Button Name="ButtonSetColor" Grid.Column="1" Grid.Row="3" Click="ButtonSetColor_Click" Margin="0,10,0,0">
                             Set
                         </Button>
                     </Grid>
                 </StackPanel>
-                
+
             </Grid>
         </DockPanel>
     </Grid>
